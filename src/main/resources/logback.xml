@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+	<property name="LOG_PATH" value="Logs" />
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <Pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+    
+     <!-- Insert the current time formatted as "yyyyMMdd'T'HHmmss" under
+	       the key "bySecond" into the logger context. This value will be
+	       available to all subsequent configuration elements. -->
+	  <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+	  <appender name="FileAppender" class="ch.qos.logback.core.FileAppender">
+	    <file>${LOG_PATH}/log-${bySecond}.log</file>
+	    <append>true</append>
+	    <!-- encoders are assigned the type
+	         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+	    <encoder>
+	      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+	    </encoder>
+	  </appender>
+
+    <appender name="Rolling-FileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/srv/logs/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover. Make sure the path matches the one in the file element or else
+             the rollover logs are placed in the working directory. -->
+            <fileNamePattern>${LOG_PATH}/log_%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- <appender name="colorAppender" class="ch.qos.logback.core.ConsoleAppender">
+	    <layout class="ch.qos.logback.classic.PatternLayout">
+	        <pattern>%d %green([%thread]) %highlight(%level) %logger{50} - %msg%n</pattern>
+	    </layout>
+	</appender> -->
+
+    <root level="DEBUG">
+        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="FileAppender" />
+        <appender-ref ref="Rolling-FileAppender" />
+        <!-- <appender-ref ref="colorAppender" /> -->
+    </root>
+</configuration>
